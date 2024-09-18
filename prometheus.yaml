@@ -1,0 +1,48 @@
+# Configuración de Prometheus para hacer "scraping" de las métricas de nuestra aplicación Spring Boot.
+# Esta configuración ha sido obtenida desde la interfaz de usuario de Prometheus(Sección "Status" -> "Configuration").
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  scrape_protocols:
+  - OpenMetricsText1.0.0
+  - OpenMetricsText0.0.1
+  - PrometheusText0.0.4
+  evaluation_interval: 15s
+runtime:
+  gogc: 75
+alerting:
+  alertmanagers:
+  - follow_redirects: true
+    enable_http2: true
+    scheme: http
+    timeout: 10s
+    api_version: v2
+    static_configs:
+    - targets: []
+scrape_configs:
+- job_name: prometheus
+  honor_timestamps: true
+  track_timestamps_staleness: false
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  scrape_protocols:
+  - OpenMetricsText1.0.0
+  - OpenMetricsText0.0.1
+  - PrometheusText0.0.4
+  # endpont por defecto de las métricas de Prometheus.
+  #metrics_path: /metrics
+  # endpoint de las métricas de nuestra aplicación.
+  metrics_path: /actuator/prometheus
+  scheme: http
+  enable_compression: true
+  follow_redirects: true
+  enable_http2: true
+  static_configs:
+  - targets:
+    # url de Prometheus. Por defecto, Prometheus expone sus propias métricas en el endpoint "http://localhost:9090/metrics".
+    # Se comenta porque no nos interesa esas métricas.
+    #- localhost:9090
+    # url de nuestra aplicación que expone las métricas.
+    # Nota: Usamos el host "host.docker.internal" porque tenemos Prometheus ejecutándose en un contenedor de Docker y nuestra aplicación está ejecutándose
+    # en la máquina fuera de Docker.
+    - host.docker.internal:8080

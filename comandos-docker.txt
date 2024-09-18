@@ -1,0 +1,19 @@
+-- Prometheus
+docker pull prom/prometheus:v2.54.1
+docker container run --detach --name prometheus-v2.54.1 -p 9090:9090 prom/prometheus:v2.54.1
+- Si queremos aplicar un archivo de configuración personalizado de Prometheus:
+docker container run -d --name prometheus-v2.54.1 -p 9090:9090 -v ${pwd}/prometheus.yaml:/etc/prometheus/prometheus.yml prom/prometheus:v2.54.1
+
+docker container stop prometheus-v2.54.1
+docker container remove prometheus-v2.54.1
+
+rate(test_timer_metric_seconds_count[5m]) -> Con la función "rate" de Prometheus podemos calcular, por ejemplo, el ratio o la tasa de las peticiones que llegan en un periodo de tiempo.
+increase(test_timer_metric_seconds_count[1m]) -> Con la función "increase" de Prometheus, podemos saber, por ejemplo, cuántas peticiones se hicieron en un determinado periodo de tiempo.
+sum(increase(test_timed_annotation_metric_seconds_count[5m]))by(status) -> En este caso, sumamos las mediciones en función del estado de la respuesta http.
+
+-- Grafana
+
+docker pull grafana/grafana:11.2.0
+docker run -d --name=grafana-v11.2.0 -p 3000:3000 grafana/grafana (las credenciales por defecto son admin:admin)
+
+Configurar un DataSource de tipo Prometheus con la url "http://host.docker.internal:9090" (Siempre que el contenedor de Prometheus tenga el puerto 9090 abierto con la máquina).
